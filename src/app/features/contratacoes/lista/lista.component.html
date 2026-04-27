@@ -1,0 +1,113 @@
+<div class="lista-page" id="lista-page">
+  <div class="page-header animate-slide-up">
+    <div>
+      <h1 class="page-title">Contratações</h1>
+      <p class="page-subtitle">{{ filtered.length }} de {{ contratacoes.length }} registros</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar animate-slide-up">
+    <div class="search-container">
+      <span class="material-icons search-icon">search</span>
+      <input
+        type="text"
+        class="input search-input"
+        placeholder="Buscar fornecedor, projeto, objeto..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="applyFilters()"
+        id="search-input"
+      >
+    </div>
+
+    <select class="input select filter-select" [(ngModel)]="filterProjeto" (ngModelChange)="applyFilters()" id="filter-projeto">
+      <option value="">Todos os projetos</option>
+      @for (p of projetos; track p) {
+        <option [value]="p">{{ p }}</option>
+      }
+    </select>
+
+    <select class="input select filter-select" [(ngModel)]="filterCategoria" (ngModelChange)="applyFilters()" id="filter-categoria">
+      <option value="">Todas as categorias</option>
+      <option value="membro">Membro Equipe</option>
+      <option value="pontual">Serviço Pontual</option>
+    </select>
+
+    <select class="input select filter-select" [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()" id="filter-status">
+      <option value="">Todos os status</option>
+      <option value="ativo">Ativo</option>
+      <option value="encerrado">Encerrado</option>
+      <option value="futuro">Futuro</option>
+      <option value="indefinido">Indefinido</option>
+    </select>
+
+    @if (hasActiveFilters()) {
+      <button class="btn btn-ghost btn-sm" (click)="clearFilters()" id="btn-clear-filters">
+        <span class="material-icons">close</span>
+        Limpar
+      </button>
+    }
+  </div>
+
+  <!-- Table -->
+  <div class="table-container card animate-slide-up">
+    @if (filtered.length > 0) {
+      <table class="data-table" id="contratacoes-table">
+        <thead>
+          <tr>
+            <th>Fornecedor</th>
+            <th>Projeto</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>Vigência</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of filtered; track c.id) {
+            <tr [routerLink]="['/contratacoes', c.id]" class="table-row">
+              <td>
+                <div class="fornecedor-cell">
+                  <span class="fornecedor-nome">{{ c.fornecedorNome || '—' }}</span>
+                  <span class="fornecedor-objeto line-clamp-2">{{ c.objetoContratacao }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="truncate projeto-cell">{{ c.projeto || '—' }}</span>
+              </td>
+              <td>
+                <span class="badge" [class.badge-membro]="c.categoria === 'membro'" [class.badge-pontual]="c.categoria === 'pontual'">
+                  {{ c.categoria === 'membro' ? 'Membro' : 'Pontual' }}
+                </span>
+              </td>
+              <td>
+                <span class="valor-cell">{{ formatCurrency(c.valor) }}</span>
+              </td>
+              <td>
+                <span class="vigencia-cell text-sm">{{ c.vigencia || '—' }}</span>
+              </td>
+              <td>
+                <span class="badge badge-dot" [class.badge-ativo]="c.status === 'ativo'" [class.badge-encerrado]="c.status === 'encerrado'" [class.badge-futuro]="c.status === 'futuro'" [class.badge-indefinido]="c.status === 'indefinido'">
+                  {{ c.status }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-primary btn-sm" (click)="gerarPdf(c, $event)" id="btn-pdf-{{ c.id }}" title="Gerar contrato PDF">
+                  <span class="material-icons">picture_as_pdf</span>
+                  PDF
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <div class="empty-state">
+        <span class="material-icons empty-state-icon">search_off</span>
+        <p>Nenhuma contratação encontrada</p>
+        <p class="text-sm text-muted">Tente ajustar os filtros ou importar um novo CSV</p>
+      </div>
+    }
+  </div>
+</div>

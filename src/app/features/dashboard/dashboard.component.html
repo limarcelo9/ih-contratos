@@ -1,0 +1,121 @@
+<div class="dashboard" id="dashboard-page">
+  <div class="page-header animate-slide-up">
+    <div>
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-subtitle">Visão geral das contratações Impact Hub Brasília</p>
+    </div>
+    <a routerLink="/importar" class="btn btn-primary" id="btn-importar-csv">
+      <span class="material-icons">upload_file</span>
+      Importar CSV
+    </a>
+  </div>
+
+  @if (stats) {
+    <!-- KPI Cards -->
+    <div class="kpi-grid animate-slide-up">
+      <div class="kpi-card stagger-1" id="kpi-total">
+        <div class="kpi-icon-container kpi-icon-bordo">
+          <span class="material-icons">description</span>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-label">Total de Contratos</span>
+          <span class="kpi-value">{{ stats.total }}</span>
+        </div>
+      </div>
+
+      <div class="kpi-card stagger-2" id="kpi-valor">
+        <div class="kpi-icon-container kpi-icon-green">
+          <span class="material-icons">payments</span>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-label">Valor Total</span>
+          <span class="kpi-value kpi-value-sm">{{ formatCurrency(stats.valorTotal) }}</span>
+        </div>
+      </div>
+
+      <div class="kpi-card stagger-3" id="kpi-ativos">
+        <div class="kpi-icon-container kpi-icon-blue">
+          <span class="material-icons">check_circle</span>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-label">Contratos Ativos</span>
+          <span class="kpi-value">{{ stats.ativos }}</span>
+        </div>
+      </div>
+
+      <div class="kpi-card stagger-4" id="kpi-projetos">
+        <div class="kpi-icon-container kpi-icon-purple">
+          <span class="material-icons">folder_open</span>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-label">Projetos</span>
+          <span class="kpi-value">{{ stats.projetos }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-grid animate-slide-up">
+      <div class="chart-card">
+        <h3 class="chart-title">Contratos por Projeto</h3>
+        <div class="chart-container">
+          <canvas baseChart
+            [data]="barChartData"
+            [options]="barChartOptions"
+            type="bar">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card chart-card-sm">
+        <h3 class="chart-title">Distribuição por Tipo</h3>
+        <div class="chart-container-sm">
+          <canvas baseChart
+            [data]="doughnutChartData"
+            [options]="doughnutChartOptions"
+            type="doughnut">
+          </canvas>
+        </div>
+        <div class="chart-stats">
+          <div class="chart-stat">
+            <span class="badge badge-membro">Membros</span>
+            <span class="chart-stat-value">{{ stats.porCategoria.membro }}</span>
+          </div>
+          <div class="chart-stat">
+            <span class="badge badge-pontual">Pontuais</span>
+            <span class="chart-stat-value">{{ stats.porCategoria.pontual }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Entidades -->
+    <div class="section-card animate-slide-up">
+      <h3 class="section-title">Top Entidades Contratantes</h3>
+      <div class="entidades-list">
+        @for (ent of stats.porEntidade.slice(0, 5); track ent.nome) {
+          <div class="entidade-item">
+            <span class="entidade-name truncate">{{ ent.nome }}</span>
+            <div class="entidade-bar-container">
+              <div class="entidade-bar" [style.width.%]="(ent.count / stats.total) * 100"></div>
+            </div>
+            <span class="entidade-count">{{ ent.count }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  } @else {
+    <!-- Loading -->
+    <div class="kpi-grid">
+      @for (i of [1,2,3,4]; track i) {
+        <div class="kpi-card">
+          <div class="skeleton" style="width: 48px; height: 48px; border-radius: 12px;"></div>
+          <div class="kpi-content">
+            <div class="skeleton" style="width: 80px; height: 12px;"></div>
+            <div class="skeleton" style="width: 60px; height: 28px; margin-top: 8px;"></div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

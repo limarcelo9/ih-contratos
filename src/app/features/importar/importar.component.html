@@ -1,0 +1,89 @@
+<div class="importar-page" id="importar-page">
+  <div class="page-header animate-slide-up">
+    <div>
+      <h1 class="page-title">Importar CSV</h1>
+      <p class="page-subtitle">Carregue o arquivo de contratações do Google Forms</p>
+    </div>
+  </div>
+
+  <div class="import-container animate-slide-up">
+    @if (!isSuccess) {
+      <div
+        class="dropzone"
+        [class.drag-over]="isDragOver"
+        [class.loading]="isLoading"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)"
+        (click)="fileInput.click()"
+        id="dropzone"
+      >
+        <input
+          #fileInput
+          type="file"
+          accept=".csv"
+          (change)="onFileSelect($event)"
+          style="display: none;"
+          id="file-input"
+        >
+
+        @if (isLoading) {
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <p class="loading-text">Processando {{ fileName }}...</p>
+          </div>
+        } @else {
+          <div class="upload-icon-container">
+            <span class="material-icons upload-icon">cloud_upload</span>
+          </div>
+          <h3 class="dropzone-title">Arraste seu arquivo CSV aqui</h3>
+          <p class="dropzone-subtitle">ou clique para selecionar</p>
+          <div class="dropzone-hint">
+            <span class="material-icons">info</span>
+            Aceita arquivos .csv exportados do Google Forms
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- Success State -->
+      <div class="success-state" id="import-success">
+        <div class="success-icon-container">
+          <span class="material-icons success-icon">check_circle</span>
+        </div>
+        <h2 class="success-title">Importação Concluída!</h2>
+        <p class="success-subtitle">
+          <strong>{{ recordCount }}</strong> contratações foram carregadas de <strong>{{ fileName }}</strong>
+        </p>
+        <div class="success-actions">
+          <button class="btn btn-primary" (click)="navigateToList()" id="btn-ver-contratacoes">
+            <span class="material-icons">visibility</span>
+            Ver Contratações
+          </button>
+          <button class="btn btn-secondary" (click)="isSuccess = false" id="btn-importar-outro">
+            <span class="material-icons">upload_file</span>
+            Importar Outro
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Info Cards -->
+    <div class="info-grid">
+      <div class="info-card">
+        <span class="material-icons info-icon">table_chart</span>
+        <h4 class="info-title">Formato Esperado</h4>
+        <p class="info-text">Arquivo CSV exportado do Google Forms com as colunas padrão do formulário de contratações.</p>
+      </div>
+      <div class="info-card">
+        <span class="material-icons info-icon">auto_fix_high</span>
+        <h4 class="info-title">Auto-Detecção</h4>
+        <p class="info-text">O sistema identifica automaticamente os campos do CSV, status da vigência e categoria de contratação.</p>
+      </div>
+      <div class="info-card">
+        <span class="material-icons info-icon">picture_as_pdf</span>
+        <h4 class="info-title">Gerar Contratos</h4>
+        <p class="info-text">Após importar, gere contratos PDF profissionais com as cláusulas padrão do Impact Hub.</p>
+      </div>
+    </div>
+  </div>
+</div>

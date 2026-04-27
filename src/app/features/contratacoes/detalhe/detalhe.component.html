@@ -1,0 +1,224 @@
+<div class="detalhe-page" id="detalhe-page">
+  @if (contratacao) {
+    <!-- Breadcrumb -->
+    <div class="breadcrumb animate-fade-in">
+      <a routerLink="/contratacoes" class="breadcrumb-link">
+        <span class="material-icons">arrow_back</span>
+        Contratações
+      </a>
+      <span class="breadcrumb-separator">/</span>
+      <span class="breadcrumb-current">{{ contratacao.fornecedorNome || 'Contratação #' + contratacao.id }}</span>
+    </div>
+
+    <!-- Header -->
+    <div class="detail-header animate-slide-up">
+      <div class="detail-header-info">
+        <div class="detail-badges">
+          <span class="badge" [class.badge-membro]="contratacao.categoria === 'membro'" [class.badge-pontual]="contratacao.categoria === 'pontual'">
+            {{ contratacao.categoria === 'membro' ? 'Membro Equipe' : 'Serviço Pontual' }}
+          </span>
+          <span class="badge badge-dot" [class.badge-ativo]="contratacao.status === 'ativo'" [class.badge-encerrado]="contratacao.status === 'encerrado'" [class.badge-futuro]="contratacao.status === 'futuro'" [class.badge-indefinido]="contratacao.status === 'indefinido'">
+            {{ contratacao.status }}
+          </span>
+        </div>
+        <h1 class="detail-title">{{ contratacao.fornecedorNome || 'Fornecedor não informado' }}</h1>
+        <p class="detail-subtitle">{{ contratacao.projeto }} · {{ contratacao.entidade }}</p>
+      </div>
+      <div class="detail-actions">
+        <button class="btn btn-primary" (click)="gerarContratoPdf()" id="btn-gerar-contrato">
+          <span class="material-icons">picture_as_pdf</span>
+          Gerar Contrato
+        </button>
+        <button class="btn btn-secondary" (click)="gerarAditivoPdf()" id="btn-gerar-aditivo">
+          <span class="material-icons">note_add</span>
+          Gerar Aditivo
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs animate-slide-up">
+      <button class="tab" [class.tab-active]="activeTab === 'geral'" (click)="setTab('geral')" id="tab-geral">
+        <span class="material-icons">info</span> Geral
+      </button>
+      <button class="tab" [class.tab-active]="activeTab === 'fornecedor'" (click)="setTab('fornecedor')" id="tab-fornecedor">
+        <span class="material-icons">business</span> Fornecedor
+      </button>
+      <button class="tab" [class.tab-active]="activeTab === 'docs'" (click)="setTab('docs')" id="tab-docs">
+        <span class="material-icons">folder</span> Documentação
+      </button>
+      @if (contratacao.categoria === 'membro') {
+        <button class="tab" [class.tab-active]="activeTab === 'rh'" (click)="setTab('rh')" id="tab-rh">
+          <span class="material-icons">people</span> RH
+        </button>
+      }
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content animate-fade-in">
+      @if (activeTab === 'geral') {
+        <div class="detail-grid">
+          <div class="detail-card">
+            <h3 class="detail-card-title">Informações do Contrato</h3>
+            <div class="detail-fields">
+              <div class="field">
+                <span class="field-label">Projeto</span>
+                <span class="field-value">{{ contratacao.projeto || '—' }}</span>
+              </div>
+              <div class="field">
+                <span class="field-label">Entidade</span>
+                <span class="field-value">{{ contratacao.entidade || '—' }}</span>
+              </div>
+              <div class="field">
+                <span class="field-label">Valor</span>
+                <span class="field-value field-value-highlight">{{ formatCurrency(contratacao.valor) }}</span>
+              </div>
+              <div class="field">
+                <span class="field-label">Vigência</span>
+                <span class="field-value">{{ contratacao.vigencia || '—' }}</span>
+              </div>
+              <div class="field">
+                <span class="field-label">Demandante</span>
+                <span class="field-value">{{ contratacao.demandante || '—' }}</span>
+              </div>
+              <div class="field">
+                <span class="field-label">Gestor Aprovador</span>
+                <span class="field-value">{{ contratacao.gestorAprovador || '—' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <h3 class="detail-card-title">Objeto da Contratação</h3>
+            <p class="detail-text">{{ contratacao.objetoContratacao || 'Não informado' }}</p>
+          </div>
+
+          @if (contratacao.observacoes) {
+            <div class="detail-card full-width">
+              <h3 class="detail-card-title">Observações</h3>
+              <p class="detail-text">{{ contratacao.observacoes }}</p>
+            </div>
+          }
+
+          @if (contratacao.dadosBancarios) {
+            <div class="detail-card full-width">
+              <h3 class="detail-card-title">Dados Bancários</h3>
+              <p class="detail-text detail-text-mono">{{ contratacao.dadosBancarios }}</p>
+            </div>
+          }
+        </div>
+      }
+
+      @if (activeTab === 'fornecedor') {
+        <div class="detail-grid">
+          <div class="detail-card full-width">
+            <h3 class="detail-card-title">Dados do Fornecedor</h3>
+            <div class="detail-fields">
+              <div class="field">
+                <span class="field-label">Nome / Razão Social</span>
+                <span class="field-value">{{ contratacao.fornecedorNome || '—' }}</span>
+              </div>
+              <div class="field">
+                <span class="field-label">Perfil Profissional</span>
+                <span class="field-value">{{ contratacao.perfilProfissional || '—' }}</span>
+              </div>
+              <div class="field">
+                <span class="field-label">Contato</span>
+                <span class="field-value">{{ contratacao.fornecedorContato || '—' }}</span>
+              </div>
+              <div class="field">
+                <span class="field-label">E-mail do Solicitante</span>
+                <span class="field-value">{{ contratacao.email || '—' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (activeTab === 'docs') {
+        <div class="detail-grid">
+          <div class="detail-card full-width">
+            <h3 class="detail-card-title">Documentação</h3>
+            <div class="docs-list">
+              <div class="doc-item">
+                <span class="material-icons doc-icon" [class.doc-ok]="contratacao.planoTrabalho">
+                  {{ contratacao.planoTrabalho ? 'check_circle' : 'cancel' }}
+                </span>
+                <span class="doc-label">Plano de Trabalho</span>
+                @if (contratacao.planoTrabalho) {
+                  <a [href]="contratacao.planoTrabalho" target="_blank" class="doc-link">Ver documento</a>
+                }
+              </div>
+              <div class="doc-item">
+                <span class="material-icons doc-icon" [class.doc-ok]="contratacao.cotacoes">
+                  {{ contratacao.cotacoes ? 'check_circle' : 'cancel' }}
+                </span>
+                <span class="doc-label">Cotações</span>
+              </div>
+              <div class="doc-item">
+                <span class="material-icons doc-icon" [class.doc-ok]="contratacao.cartaoCnpj">
+                  {{ contratacao.cartaoCnpj ? 'check_circle' : 'cancel' }}
+                </span>
+                <span class="doc-label">Cartão CNPJ</span>
+              </div>
+              <div class="doc-item">
+                <span class="material-icons doc-icon" [class.doc-ok]="contratacao.certidaoFiscal">
+                  {{ contratacao.certidaoFiscal ? 'check_circle' : 'cancel' }}
+                </span>
+                <span class="doc-label">Certidão Fiscal</span>
+              </div>
+              <div class="doc-item">
+                <span class="material-icons doc-icon" [class.doc-ok]="contratacao.certidaoFgts">
+                  {{ contratacao.certidaoFgts ? 'check_circle' : 'cancel' }}
+                </span>
+                <span class="doc-label">Certidão FGTS</span>
+              </div>
+              <div class="doc-item">
+                <span class="material-icons doc-icon" [class.doc-ok]="contratacao.evidenciaAprovacao">
+                  {{ contratacao.evidenciaAprovacao ? 'check_circle' : 'cancel' }}
+                </span>
+                <span class="doc-label">Evidência de Aprovação</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (activeTab === 'rh') {
+        <div class="detail-grid">
+          <div class="detail-card full-width">
+            <h3 class="detail-card-title">Informações RH</h3>
+            <div class="detail-fields">
+              <div class="field">
+                <span class="field-label">Círculo</span>
+                <span class="field-value">{{ contratacao.circulo || '—' }}</span>
+              </div>
+              <div class="field">
+                <span class="field-label">E-mail Organizacional</span>
+                <span class="field-value">{{ contratacao.emailOrganizacional || '—' }}</span>
+              </div>
+              <div class="field">
+                <span class="field-label">Notebook</span>
+                <span class="field-value">{{ contratacao.notebook || '—' }}</span>
+              </div>
+              <div class="field">
+                <span class="field-label">Celular</span>
+                <span class="field-value">{{ contratacao.celular || '—' }}</span>
+              </div>
+              <div class="field">
+                <span class="field-label">Plataformas</span>
+                <span class="field-value">{{ contratacao.plataformas || '—' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <span class="material-icons empty-state-icon">error_outline</span>
+      <p>Contratação não encontrada</p>
+      <a routerLink="/contratacoes" class="btn btn-primary" style="margin-top: 16px">Voltar à lista</a>
+    </div>
+  }
+</div>

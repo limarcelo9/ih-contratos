@@ -1,0 +1,41 @@
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo-container">
+      <img src="ih-logo.png" alt="Impact Hub Brasília" class="logo-img">
+    </div>
+    <div class="app-name">
+      <span class="app-title">IH Contratos</span>
+      <span class="app-subtitle">Gestão de Contratos</span>
+    </div>
+  </div>
+
+  <div class="sidebar-nav">
+    <span class="nav-section-title">MENU PRINCIPAL</span>
+
+    <a routerLink="/dashboard" routerLinkActive="active" id="nav-dashboard" class="nav-item">
+      <span class="material-icons">dashboard</span>
+      <span class="nav-label">Dashboard</span>
+    </a>
+
+    <a routerLink="/contratacoes" routerLinkActive="active" id="nav-contratacoes" class="nav-item">
+      <span class="material-icons">description</span>
+      <span class="nav-label">Contratações</span>
+      @if (count$ | async; as count) {
+        <span class="nav-badge">{{ count }}</span>
+      }
+    </a>
+
+    <a routerLink="/importar" routerLinkActive="active" id="nav-importar" class="nav-item">
+      <span class="material-icons">upload_file</span>
+      <span class="nav-label">Importar CSV</span>
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="footer-divider"></div>
+    <div class="footer-info">
+      <span class="material-icons">info</span>
+      <span>Impact Hub Brasília</span>
+    </div>
+  </div>
+</nav>
